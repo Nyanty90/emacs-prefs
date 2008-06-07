@@ -11,7 +11,7 @@
  '(interpreter-mode-alist nil t)
  '(pc-select-meta-moves-sexps t)
  '(pc-select-selection-keys-only t)
- '(pc-selection-mode t t)
+; '(pc-selection-mode t t)
  '(save-place t nil (saveplace))
  '(make-backup-files nil)
  '(show-paren-mode t nil (paren))
@@ -24,6 +24,7 @@
  )
 (delete-selection-mode t)
 (put 'narrow-to-region 'disabled nil)
+(setq initial-frame-alist '((top . 1) (left . 520) (width . 100) (height . 60)))
 
 ;+
 ; End Emacs-generated stuff, begin my stuff
@@ -45,12 +46,18 @@
 		(kill-buffer (current-buffer))
 	) ; lambda
 )
-(global-set-key [?\H-\s-s] 'save-buffer) ; save
-(global-set-key [?\H-\s-S] 'write-file) ; save as...
-(global-set-key [?\H-\s-q] 'save-buffers-kill-emacs) ; quit
-(global-set-key [?\H-\s-z] 'undo)
+(global-set-key [?\s-s] 'save-buffer) ; save
+(global-set-key [?\s-S] 'write-file) ; save as...
+(global-set-key [?\s-q] 'save-buffers-kill-emacs) ; quit
+(global-set-key [?\s-z] 'undo)
 
 (global-set-key [menu] 'tmm-menubar)
+
+(defun revert ()
+	"revert current buffer without confirmation."
+	(interactive)
+	(revert-buffer t t)
+) ; revert
 
 (global-set-key [?\C-c ?d]
 	'(lambda ()
@@ -73,7 +80,7 @@
 ; Indentation control
 ;-
 
-; (global-set-key "\t" 'indent-relative)
+(global-set-key "\t" 'tab-to-tab-stop)
 (defun auto_indent ()
 	"auto-indent the way I like it."
 	(interactive)
@@ -120,23 +127,27 @@
 
 (set_auto_indent t) ; only possible default
 
-(global-set-key [?\H-\s-]]
-	'(lambda (beg end wherepoint wheremark)
+(global-set-key [?\s-]]
+	'(lambda (beg end)
 		"indent selected range by 4 columns without losing selection."
-		(interactive "r\nd\np")
-		(indent-rigidly beg end 4)
-		(point wherepoint)
-		(set-mark wheremark)
+		(interactive "*r")
+		(let (deactivate-mark)
+			(set 'point_marker (point-marker))
+			(indent-rigidly beg end 4)
+			(goto-char (marker-position point_marker))
+		); let
 	) ; lambda
 )
 
-(global-set-key [?\H-\s-[]
-	'(lambda (beg end wherepoint wheremark)
+(global-set-key [?\s-[]
+	'(lambda (beg end)
 		"unindent selected range by 4 columns without losing selection."
-		(interactive "r\nd\np")
-		(indent-rigidly beg end -4)
-		(point wherepoint)
-		(set-mark wheremark)
+		(interactive "*r")
+		(let (deactivate-mark)
+			(set 'point_marker (point-marker))
+			(indent-rigidly beg end -4)
+			(goto-char (marker-position point_marker))
+		) ; let
 	) ; lambda
 )
 
@@ -146,18 +157,10 @@
 
 (defvar clipboard_register 67 "the register to use as the Clipboard.")
 
-(global-set-key [?\H-\s-c]
-	; copy selection to Clipboard register
-	'(lambda (beg end)
-		(interactive "r")
-		(set-register clipboard_register (buffer-substring beg end))
-	) ; lambda
-)
-
-(global-set-key [?\H-\s-x]
+(global-set-key [?\s-x]
 	; cut selection to Clipboard register
 	'(lambda (beg end)
-		(interactive "r")
+		(interactive "*r")
 		(set-register clipboard_register (buffer-substring beg end))
 		(when mark-active
 			(delete-region beg end)
@@ -165,12 +168,20 @@
 	) ; lambda
 )
 
-(global-set-key [?\H-\s-v]
-	; paste Clipboard register replacing selection
+(global-set-key [?\s-c]
+	; copy selection to Clipboard register
 	'(lambda (beg end)
 		(interactive "r")
+		(set-register clipboard_register (buffer-substring beg end))
+	) ; lambda
+)
+
+(global-set-key [?\s-v]
+	; paste Clipboard register replacing selection
+	'(lambda ()
+		(interactive)
 		(when mark-active
-			(delete-region beg end)
+			(delete-region (min (point) (mark)) (max (point) mark))
 		)
 		(insert-register clipboard_register t)
 	) ; lambda
@@ -221,7 +232,7 @@
 	) ; let
 ) ; search_next
 
-(global-set-key [?\H-\s-h]
+(global-set-key [?\s-h]
 	; search forward for next occurrence of current selection
 	'(lambda (selbegin selend)
 		(interactive "r")
@@ -237,7 +248,7 @@
 	) ; lambda
 )
 
-(global-set-key [?\H-\s-H]
+(global-set-key [?\s-H]
 	; search backward for next occurrence of current selection
 	'(lambda (selbegin selend)
 		(interactive "r")
@@ -253,7 +264,7 @@
 	) ; lambda
 )
 
-(global-set-key [?\H-\s-g]
+(global-set-key [?\s-g]
 	; search forward for next occurrence of last_search_string
 	'(lambda ()
 		(interactive)
@@ -261,7 +272,7 @@
 	) ; lambda
 )
 
-(global-set-key [?\H-\s-G]
+(global-set-key [?\s-G]
 	; search backward for next occurrence of last_search_string
 	'(lambda ()
 		(interactive)
