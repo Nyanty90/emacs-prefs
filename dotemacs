@@ -37,9 +37,9 @@
 
 (global-unset-key [?\C-t]) ; keep hitting it accidentally
 
-; MPW-style shortcuts (?\H-\s- is Windows key)
-(global-set-key [?\H-\s-o] 'find-file) ; open...
-(global-set-key [?\H-\s-w]
+; MPW-style shortcuts (?\s- is Windows key)
+(global-set-key [?\s-o] 'find-file) ; open...
+(global-set-key [?\s-w]
 	'(lambda ()
 		"closes the current buffer."
 		(interactive)
