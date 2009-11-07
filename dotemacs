@@ -200,7 +200,7 @@
 	'(lambda ()
 		(interactive)
 		(when mark-active
-			(delete-region (min (point) (mark)) (max (point) mark))
+			(delete-region (min (point) (mark)) (max (point) (mark)))
 		)
 		(insert-register clipboard_register t)
 	) ; lambda
