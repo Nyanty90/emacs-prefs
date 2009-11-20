@@ -171,42 +171,6 @@
 )
 
 ;+
-; cut/copy/paste
-;-
-
-(defvar clipboard_register 67 "the register to use as the Clipboard.")
-
-(global-set-key [?\s-x]
-	; cut selection to Clipboard register
-	'(lambda (beg end)
-		(interactive "*r")
-		(set-register clipboard_register (buffer-substring beg end))
-		(when mark-active
-			(delete-region beg end)
-		)
-	) ; lambda
-)
-
-(global-set-key [?\s-c]
-	; copy selection to Clipboard register
-	'(lambda (beg end)
-		(interactive "r")
-		(set-register clipboard_register (buffer-substring beg end))
-	) ; lambda
-)
-
-(global-set-key [?\s-v]
-	; paste Clipboard register replacing selection
-	'(lambda ()
-		(interactive)
-		(when mark-active
-			(delete-region (min (point) (mark)) (max (point) (mark)))
-		)
-		(insert-register clipboard_register t)
-	) ; lambda
-)
-
-;+
 ; Search/replace
 ;-
 
