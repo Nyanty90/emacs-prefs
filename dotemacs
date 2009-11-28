@@ -39,10 +39,12 @@
 
 (global-unset-key [?\C-t]) ; keep hitting it accidentally
 
-(global-set-key [down] 'next-logical-line)
-(global-set-key [up] 'previous-logical-line)
-(global-set-key (kbd "M-<down>") 'next-line)
-(global-set-key (kbd "M-<up>") 'previous-line)
+(when (fboundp 'next-logical-line)
+	(global-set-key [down] 'next-logical-line)
+	(global-set-key [up] 'previous-logical-line)
+	(global-set-key (kbd "M-<down>") 'next-line)
+	(global-set-key (kbd "M-<up>") 'previous-line)
+) ; when
 
 ; MPW-style shortcuts (?\s- is Windows key)
 (global-set-key [?\s-o] 'find-file) ; open...
