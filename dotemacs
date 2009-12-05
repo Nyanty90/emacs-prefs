@@ -179,6 +179,64 @@
 )
 
 ;+
+; Command buffers
+;-
+
+(defun make-command-buffer (cmd name)
+	"creates a command buffer with the specified name, executing the specified cmd on selected text when ctrl-j is hit."
+	(interactive "sCmd: \nsBuffer name: ")
+	(let
+		(
+			(thebuffer (generate-new-buffer name))
+			(thekeymap (make-sparse-keymap))
+		)
+		(switch-to-buffer thebuffer)
+		(make-local-variable 'buffer-command)
+		(setq buffer-command cmd)
+		(use-local-map thekeymap)
+		(define-key
+			thekeymap
+			[?\C-j]
+			'(lambda ()
+				(interactive)
+				(let (beg end)
+					(cond
+						(mark-active
+							(setq beg (min (point) (mark)))
+							(setq end (max (point) (mark)))
+						)
+						(t
+							(setq beg (search-backward "\n" nil t))
+							(cond
+								((eq beg nil)
+									(setq beg (point-min))
+								)
+								(t
+									(setq beg (+ beg 1))
+								)
+							) ; cond
+							(forward-char)
+							(search-forward "\n" nil 1)
+							(setq end (point))
+						)
+					) ; cond
+					(deactivate-mark)
+					(goto-char end)
+					(unless (eq (char-before) 10)
+						(insert "\n")
+						(setq end (point))
+					) ; unless
+					(call-process-region beg end buffer-command nil t)
+				) ; let
+			) ; lambda
+		) ; define-key
+		(insert "# press ctrl-j to execute \"")
+		(insert buffer-command)
+		(insert "\" on selected text.\n\n")
+	) ; let
+) ; defun
+
+;+
 ; Search/replace, MPW-style
 ;-
 
