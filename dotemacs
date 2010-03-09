@@ -192,7 +192,7 @@
 		)
 		(switch-to-buffer thebuffer)
 		(make-local-variable 'buffer-command)
-		(setq buffer-command cmd)
+		(setq buffer-command (split-string cmd))
 		(use-local-map thekeymap)
 		(define-key
 			thekeymap
@@ -226,12 +226,12 @@
 						(insert "\n")
 						(setq end (point))
 					) ; unless
-					(call-process-region beg end buffer-command nil t)
+					(eval `(call-process-region beg end (car buffer-command) nil t ,@buffer-command))
 				) ; let
 			) ; lambda
 		) ; define-key
 		(insert "# press ctrl-j to execute \"")
-		(insert buffer-command)
+		(insert cmd)
 		(insert "\" on selected text.\n\n")
 	) ; let
 ) ; defun
