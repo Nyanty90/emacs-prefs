@@ -178,6 +178,34 @@
 	) ; lambda
 )
 
+(add-hook 'find-file-hook
+	'(lambda ()
+		"sets tab expansion depending on whether the current buffer contains tabs."
+		(save-excursion
+			; check text within the region of point; if tabs are found, then
+			; indent with tabs, else indent with spaces
+			(let
+				(
+					(checkamt 2048) ; how much text to check
+				)
+				(when (<= (point-max) (+ (point) checkamt))
+					(goto-char 
+						(cond
+							((>= (point-max) checkamt)
+								(- (point-max) checkamt)
+							)
+							(t
+								(point-min)
+							)
+						) ; cond
+					) ; goto-char
+				) ; when
+				(setq indent-tabs-mode (search-forward "\t" (+ (point) checkamt) t))
+			) ; let
+		) ; save-excursion
+	) ; lambda
+) ; add-hook
+
 ;+
 ; Command buffers
 ;-
