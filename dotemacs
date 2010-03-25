@@ -206,6 +206,19 @@
 	) ; lambda
 ) ; add-hook
 
+(global-set-key [?\C-c ?a]
+	'(lambda (beg end)
+		"indents selected range to same level as first line without losing selection."
+		(interactive "*r")
+		(let (deactivate-mark)
+			(set 'point_marker (point-marker))
+			(goto-char beg)
+			(indent-region beg end (current-indentation))
+			(goto-char (marker-position point_marker))
+		) ; let
+	) ; lambda
+)
+
 ;+
 ; Command buffers
 ;-
