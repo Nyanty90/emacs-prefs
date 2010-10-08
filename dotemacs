@@ -58,7 +58,7 @@
 )
 (global-set-key [?\s-s] 'save-buffer) ; save
 (global-set-key [?\s-S] 'write-file) ; save as...
-(global-set-key [?\s-q] 'save-buffers-kill-emacs) ; quit
+; (global-set-key [?\s-q] 'save-buffers-kill-emacs) ; quit ; forget it--keep hitting it accidentally
 (global-set-key [?\s-z] 'undo)
 
 (global-set-key [menu] 'tmm-menubar)
