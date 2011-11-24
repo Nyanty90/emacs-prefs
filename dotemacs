@@ -219,6 +219,21 @@
     ) ; lambda
 )
 
+(global-set-key [?\C-c ?m]
+    '(lambda ()
+        "selects the whole of the current message (from previous formfeed up to before next formfeed) in a mail collection file"
+        (interactive)
+        (deactivate-mark)
+        (search-backward "\f" nil 1)
+        (set-mark (point))
+        (cond
+            ((search-forward "\f" nil 1 2)
+                (backward-char)
+            )
+        ) ; cond
+    ) ; lambda
+)
+
 ;+
 ; Command buffers
 ;-
