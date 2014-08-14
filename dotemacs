@@ -316,7 +316,7 @@
         (use-local-map thekeymap)
         (define-key
             thekeymap
-            [?\C-j]
+            [?\C-j] ; send selected data to process
             '(lambda ()
                 (interactive)
                 (let (beg end)
@@ -349,6 +349,43 @@
                     (set-marker (process-mark buffer-process) end)
                     (process-send-region buffer-process beg end)
                 ) ; let
+            ) ; lambda
+        ) ; define-key
+        (define-key
+            thekeymap
+            [?\s-O] ; open filename represented by current selection
+            '(lambda (selbegin selend)
+                (interactive "r")
+                (cond
+                    (mark-active
+                        (let
+                            (
+                                (path (buffer-substring selbegin selend))
+                            )
+                            (cond
+                                ((not (file-name-absolute-p path))
+                                    (setq path
+                                        (concat
+                                            (file-truename
+                                                (concat
+                                                    "/proc/"
+                                                    (format "%s" (process-id buffer-process))
+                                                    "/cwd"
+                                                ) ; concat
+                                            ); file-truname
+                                            "/"
+                                            path
+                                        ) ; concat
+                                    ) ; setq
+                                )
+                            )
+                            (find-file path)
+                        ) ; let
+                    )
+                    (t
+                        (ding)
+                    )
+                ) ; cond
             ) ; lambda
         ) ; define-key
         (insert "# press ctrl-j to feed selected text to shell.\n\n")
