@@ -282,7 +282,9 @@
                         (insert "\n")
                         (setq end (point))
                     ) ; unless
-                    (eval `(call-process-region beg end (car buffer-command) nil t ,@buffer-command))
+                    (eval
+                        `(call-process-region beg end (car buffer-command) nil t ,@buffer-command)
+                    )
                 ) ; let
             ) ; lambda
         ) ; define-key
@@ -290,7 +292,68 @@
         (insert cmd)
         (insert "\" on selected text.\n\n")
     ) ; let
-) ; defun
+) ; defun make-command-buffer
+
+(defun make-shell-buffer (name)
+    "creates a process buffer with the specified name, for a process executing a shell, which is fed selected text as input when ctrl-j is hit."
+    (interactive "sBuffer name: ")
+    (let
+        (
+            (thebuffer (generate-new-buffer name))
+            (thekeymap (make-sparse-keymap))
+            (shell (getenv "SHELL"))
+        )
+        (cond
+            ((eq shell nil)
+                (setq shell "/bin/bash")
+            )
+        ) ; cond
+        (switch-to-buffer thebuffer)
+        (make-local-variable 'buffer-process)
+        (setq buffer-process
+            (start-process name thebuffer shell)
+        )
+        (use-local-map thekeymap)
+        (define-key
+            thekeymap
+            [?\C-j]
+            '(lambda ()
+                (interactive)
+                (let (beg end)
+                    (cond
+                        (mark-active
+                            (setq beg (min (point) (mark)))
+                            (setq end (max (point) (mark)))
+                        )
+                        (t
+                            (setq beg (search-backward "\n" nil t))
+                            (cond
+                                ((eq beg nil)
+                                    (setq beg (point-min))
+                                )
+                                (t
+                                    (setq beg (+ beg 1))
+                                )
+                            ) ; cond
+                            (forward-char)
+                            (search-forward "\n" nil 1)
+                            (setq end (point))
+                        )
+                    ) ; cond
+                    (deactivate-mark)
+                    (goto-char end)
+                    (unless (eq (char-before) 10)
+                        (insert "\n")
+                        (setq end (point))
+                    ) ; unless
+                    (set-marker (process-mark buffer-process) end)
+                    (process-send-region buffer-process beg end)
+                ) ; let
+            ) ; lambda
+        ) ; define-key
+        (insert "# press ctrl-j to feed selected text to shell.\n\n")
+    ) ; let
+) ; defun make-shell-buffer
 
 ;+
 ; Search/replace, MPW-style
