@@ -247,6 +247,59 @@
 ; Command buffers
 ;-
 
+(defun cur-line (ensure-newline)
+    "returns list of two character positions, representing the beginning and end of the selection if there is one, else the beginning and end of the current line. ensure-newline => ensures there is a newline at the end of the line."
+    (let (beg end)
+        (cond
+            (mark-active
+                (setq beg (min (point) (mark)))
+                (setq end (max (point) (mark)))
+            )
+            (t
+                (save-excursion
+                    (setq beg (search-backward "\n" nil t))
+                    (cond
+                        (beg
+                            (setq beg (+ beg 1))
+                        )
+                        (t
+                            (setq beg (point-min))
+                        )
+                    ) ; cond
+                    (goto-char beg)
+                    (search-forward "\n" nil 1)
+                    (setq end (point))
+                ) ; save-excursion
+            )
+        ) ; cond
+        (when ensure-newline
+            (deactivate-mark)
+            (goto-char end)
+            (unless (eq (char-before) 10)
+                (insert "\n")
+                (setq end (point))
+            ) ; unless
+        ) ; when
+        (list beg end)
+    ) ; let
+) ; defun cur-line
+
+(defmacro get-cur-line (ensure-newline beg end)
+    "calls (cur-line ensure-newline) and assigns the two components of the result to beg and end."
+    (let
+        (
+            (tempvar (make-symbol "temp"))
+        )
+        `(let
+            (
+                (,tempvar (cur-line ,ensure-newline))
+            )
+            (setq ,beg (car ,tempvar))
+            (setq ,end (cadr ,tempvar))
+        ) ; let
+    ) ; let
+) ; defmacro get-cur-line
+
 (defun make-command-buffer (cmd name)
     "creates a command buffer with the specified name, executing the specified cmd on selected text when ctrl-j is hit."
     (interactive "sCmd: \nsBuffer name: ")
@@ -265,32 +318,7 @@
             '(lambda ()
                 (interactive)
                 (let (beg end)
-                    (cond
-                        (mark-active
-                            (setq beg (min (point) (mark)))
-                            (setq end (max (point) (mark)))
-                        )
-                        (t
-                            (setq beg (search-backward "\n" nil t))
-                            (cond
-                                ((eq beg nil)
-                                    (setq beg (point-min))
-                                )
-                                (t
-                                    (setq beg (+ beg 1))
-                                )
-                            ) ; cond
-                            (forward-char)
-                            (search-forward "\n" nil 1)
-                            (setq end (point))
-                        )
-                    ) ; cond
-                    (deactivate-mark)
-                    (goto-char end)
-                    (unless (eq (char-before) 10)
-                        (insert "\n")
-                        (setq end (point))
-                    ) ; unless
+                    (get-cur-line t beg end)
                     (eval
                         `(call-process-region beg end (car buffer-command) nil t ,@buffer-command)
                     )
@@ -329,32 +357,7 @@
             '(lambda ()
                 (interactive)
                 (let (beg end)
-                    (cond
-                        (mark-active
-                            (setq beg (min (point) (mark)))
-                            (setq end (max (point) (mark)))
-                        )
-                        (t
-                            (setq beg (search-backward "\n" nil t))
-                            (cond
-                                ((eq beg nil)
-                                    (setq beg (point-min))
-                                )
-                                (t
-                                    (setq beg (+ beg 1))
-                                )
-                            ) ; cond
-                            (forward-char)
-                            (search-forward "\n" nil 1)
-                            (setq end (point))
-                        )
-                    ) ; cond
-                    (deactivate-mark)
-                    (goto-char end)
-                    (unless (eq (char-before) 10)
-                        (insert "\n")
-                        (setq end (point))
-                    ) ; unless
+                    (get-cur-line t beg end)
                     (set-marker (process-mark buffer-process) end)
                     (process-send-region buffer-process beg end)
                 ) ; let
@@ -363,38 +366,45 @@
         (define-key
             thekeymap
             [?\s-O] ; open filename represented by current selection
-            '(lambda (selbegin selend)
-                (interactive "r")
-                (cond
-                    (mark-active
-                        (let
-                            (
-                                (path (buffer-substring selbegin selend))
-                            )
-                            (cond
-                                ((not (file-name-absolute-p path))
-                                    (setq path
-                                        (concat
-                                            (file-truename
-                                                (concat
-                                                    "/proc/"
-                                                    (format "%s" (process-id buffer-process))
-                                                    "/cwd"
-                                                ) ; concat
-                                            ); file-truname
-                                            "/"
-                                            path
-                                        ) ; concat
-                                    ) ; setq
+            '(lambda ()
+                (interactive)
+                (let (selbeg selend path colon1pos colon2pos line-nr)
+                    (get-cur-line nil selbeg selend)
+                    (setq path (buffer-substring selbeg selend))
+                    (setq colon1pos (string-match ":" path))
+                    (when colon1pos
+                        (when (string-match ":[0-9]+:" path)
+                            (setq colon2pos (match-end 0))
+                            (setq line-nr
+                                (string-to-number
+                                    (substring path (+ colon1pos 1) colon2pos)
                                 )
-                            )
-                            (find-file path)
-                        ) ; let
-                    )
-                    (t
-                        (ding)
-                    )
-                ) ; cond
+                            ) ; setq
+                        ) ; when
+                        (setq path
+                            (substring path 0 colon1pos)
+                        ) ; setq
+                    ) ; when
+                    (unless (file-name-absolute-p path)
+                        (setq path
+                            (concat
+                                (file-truename
+                                    (concat
+                                        "/proc/"
+                                        (format "%s" (process-id buffer-process))
+                                        "/cwd"
+                                    ) ; concat
+                                ); file-truname
+                                "/"
+                                path
+                            ) ; concat
+                        ) ; setq
+                    ) ; unless
+                    (find-file path)
+                    (when line-nr
+                        (goto-line line-nr)
+                    ) ; when
+                ) ; let
             ) ; lambda
         ) ; define-key
         (insert "# press ctrl-j to feed selected text to shell.\n\n")
