@@ -33,8 +33,8 @@
 (setq initial-frame-alist '((top . 1) (left . 520) (width . 100) (height . 60)))
 (set-face-attribute 'default nil :family "fixed")
 (server-start)
-(set 'inhibit-startup-message t)
-(set 'initial-scratch-message
+(setq inhibit-startup-message t)
+(setq initial-scratch-message
     (purecopy "; Scratch buffer -- list evaluation\n\n")
 )
 
@@ -105,7 +105,7 @@
     "lets user change auto-indent setting."
     (interactive)
     (when (eq on nil)
-        (set 'on
+        (setq on
             (y-or-n-p
                 (format
                     "Auto-indent [%s]? "
@@ -119,7 +119,7 @@
                     ) ; if
                 )
             )
-        ) ; set
+        ) ; setq
     ) ; when
     (cond
         (on
@@ -141,11 +141,14 @@
     '(lambda (beg end)
         "indent selected range by 4 columns without losing selection."
         (interactive "*r")
-        (let (deactivate-mark)
-            (set 'point_marker (point-marker))
+        (let*
+            (
+                deactivate-mark
+                (point_marker (point-marker))
+            )
             (indent-rigidly beg end 4)
             (goto-char (marker-position point_marker))
-        ) ; let
+        ) ; let*
     ) ; lambda
 )
 
@@ -153,11 +156,14 @@
     '(lambda (beg end)
         "unindent selected range by 4 columns without losing selection."
         (interactive "*r")
-        (let (deactivate-mark)
-            (set 'point_marker (point-marker))
+        (let*
+            (
+                deactivate-mark
+                (point_marker (point-marker))
+            )
             (indent-rigidly beg end -4)
             (goto-char (marker-position point_marker))
-        ) ; let
+        ) ; let*
     ) ; lambda
 )
 
@@ -167,11 +173,11 @@
         (interactive)
         (cond
             (indent-tabs-mode
-                (set 'indent-tabs-mode nil)
+                (setq indent-tabs-mode nil)
                 (message "tabs will be expanded to spaces")
             )
             (t
-                (set 'indent-tabs-mode t)
+                (setq indent-tabs-mode t)
                 (message "tabs will not be expanded to spaces")
             )
         ) ; cond
@@ -210,8 +216,11 @@
     '(lambda (beg end)
         "indents selected range to same level as first line without losing selection."
         (interactive "*r")
-        (let (deactivate-mark)
-            (set 'point_marker (point-marker))
+        (let
+            (
+                deactivate-mark
+                (point_marker (point-marker))
+            )
             (goto-char beg)
             (indent-region beg end (current-indentation))
             (goto-char (marker-position point_marker))
@@ -404,7 +413,7 @@
         (unless (equal last_search_string "")
             (cond
                 (mark-active
-                    (set 'startpos
+                    (setq startpos
                         (cond
                             (fwd
                                 (max (point) (mark))
@@ -416,7 +425,7 @@
                     )
                 )
                 (t
-                    (set 'startpos (point))
+                    (setq startpos (point))
                 )
             ) ; cond
             (deactivate-mark)
@@ -443,7 +452,7 @@
         (interactive "r")
         (cond
             (mark-active
-                (set 'last_search_string (buffer-substring selbegin selend))
+                (setq last_search_string (buffer-substring selbegin selend))
                 (search_next t)
             )
             (t
@@ -459,7 +468,7 @@
         (interactive "r")
         (cond
             (mark-active
-                (set 'last_search_string (buffer-substring selbegin selend))
+                (setq last_search_string (buffer-substring selbegin selend))
                 (search_next nil)
             )
             (t
