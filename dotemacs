@@ -136,6 +136,7 @@
 ) ; set_auto_indent
 
 (set_auto_indent t) ; only possible default
+(electric-indent-mode -1) ; disable new behaviour in Emacs 24 that interferes with my code
 
 (global-set-key [?\s-]]
     '(lambda (beg end)
