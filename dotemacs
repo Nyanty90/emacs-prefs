@@ -198,7 +198,7 @@
                     (checkamt 2048) ; how much text to check
                 )
                 (when (<= (point-max) (+ (point) checkamt))
-                    (goto-char 
+                    (goto-char
                         (cond
                             ((>= (point-max) checkamt)
                                 (- (point-max) checkamt)
