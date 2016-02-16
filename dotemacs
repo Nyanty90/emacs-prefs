@@ -29,7 +29,7 @@
 ; (set-default-font "Hack") ; doesn't work
 (add-to-list ; this works
     'default-frame-alist
-    '(font . "Hack") ; get from <http://sourcefoundry.org/hack/>
+    '(font . "Hack-10") ; get from <http://sourcefoundry.org/hack/>
 )
 
 ;+
