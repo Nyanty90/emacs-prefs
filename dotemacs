@@ -26,11 +26,13 @@
     ;; custom-set-faces was added by Custom -- don't edit or cut/paste it!
     ;; Your init file should contain only one such instance.
  )
-; (set-default-font "Hack") ; doesn't work
-(add-to-list ; this works
-    'default-frame-alist
-    '(font . "Hack-10") ; get from <http://sourcefoundry.org/hack/>
-)
+ (when (x-list-fonts "Hack-10")
+    ; (set-default-font "Hack") ; doesn't work
+    (add-to-list ; this works
+        'default-frame-alist
+        '(font . "Hack-10") ; get from <http://sourcefoundry.org/hack/>
+    )
+) ; when
 
 ;+
 ; End Emacs-generated stuff, begin my stuff
