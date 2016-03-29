@@ -26,12 +26,14 @@
     ;; custom-set-faces was added by Custom -- don't edit or cut/paste it!
     ;; Your init file should contain only one such instance.
  )
- (when (x-list-fonts "Hack-10")
-    ; (set-default-font "Hack") ; doesn't work
-    (add-to-list ; this works
-        'default-frame-alist
-        '(font . "Hack-10") ; get from <http://sourcefoundry.org/hack/>
-    )
+ (when (display-graphic-p)
+     (when (x-list-fonts "Hack-10")
+        ; (set-default-font "Hack") ; doesn't work
+        (add-to-list ; this works
+            'default-frame-alist
+            '(font . "Hack-10") ; get from <http://sourcefoundry.org/hack/>
+        )
+    ) ; when
 ) ; when
 
 ;+
