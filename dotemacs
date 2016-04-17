@@ -15,6 +15,8 @@
     '(pc-select-selection-keys-only t)
 ;   '(pc-selection-mode t t)
     '(save-place t nil (saveplace))
+    '(show-trailing-whitespace t)
+    '(indicate-empty-lines t)
     '(make-backup-files nil)
     '(show-paren-mode t nil (paren))
     '(scroll-error-top-bottom t)
@@ -239,6 +241,23 @@
             (goto-char beg)
             (indent-region beg end (current-indentation))
             (goto-char (marker-position point_marker))
+        ) ; let
+    ) ; lambda
+)
+
+(global-set-key [?\s-\ ]
+    '(lambda ()
+        (interactive)
+        (let ((prev-buffer-size (buffer-size)))
+            (delete-trailing-whitespace)
+            (cond
+                ((/= prev-buffer-size (buffer-size))
+                    (message "trailing whitespace deleted")
+                )
+                (t
+                    (message "no trailing whitespace found")
+                )
+            ) ; cond
         ) ; let
     ) ; lambda
 )
