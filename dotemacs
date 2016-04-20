@@ -64,7 +64,7 @@
 ; MPW-style shortcuts (?\s- is Windows key)
 (global-set-key [?\s-o] 'find-file) ; open...
 (global-set-key [?\s-w]
-    '(lambda ()
+    (lambda ()
         "closes the current buffer."
         (interactive)
         (kill-buffer (current-buffer))
@@ -84,7 +84,7 @@
 ) ; revert
 
 (global-set-key [?\C-c ?d]
-    '(lambda ()
+    (lambda ()
         "inserts current date in canonical format."
         (interactive)
         (insert (shell-command-to-string "date +\"%Y %B %-d\""))
@@ -93,7 +93,7 @@
 )
 
 (global-set-key [?\C-c ?l]
-    '(lambda ()
+    (lambda ()
         "inserts my standard identification string."
         (interactive)
         (insert "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>")
@@ -155,7 +155,7 @@
 ) ; when
 
 (global-set-key [?\s-]]
-    '(lambda (beg end)
+    (lambda (beg end)
         "indent selected range by 4 columns without losing selection."
         (interactive "*r")
         (let*
@@ -170,7 +170,7 @@
 )
 
 (global-set-key [?\s-[]
-    '(lambda (beg end)
+    (lambda (beg end)
         "unindent selected range by 4 columns without losing selection."
         (interactive "*r")
         (let*
@@ -185,7 +185,7 @@
 )
 
 (global-set-key [?\C-c ?t]
-    '(lambda ()
+    (lambda ()
         "toggle tab expansion for current buffer."
         (interactive)
         (cond
@@ -202,7 +202,7 @@
 )
 
 (add-hook 'find-file-hook
-    '(lambda ()
+    (lambda ()
         "sets tab expansion depending on whether the current buffer contains tabs."
         (save-excursion
             ; check text within the region of point; if tabs are found, then
@@ -230,7 +230,7 @@
 ) ; add-hook
 
 (global-set-key [?\C-c ?a]
-    '(lambda (beg end)
+    (lambda (beg end)
         "indents selected range to same level as first line without losing selection."
         (interactive "*r")
         (let
@@ -246,7 +246,7 @@
 )
 
 (global-set-key [?\s-\ ]
-    '(lambda ()
+    (lambda ()
         (interactive)
         (let ((prev-buffer-size (buffer-size)))
             (delete-trailing-whitespace)
@@ -263,7 +263,7 @@
 )
 
 (global-set-key [?\C-c ?m]
-    '(lambda ()
+    (lambda ()
         "selects the whole of the current message (from previous formfeed up to before next formfeed) in a mail collection file"
         (interactive)
         (deactivate-mark)
@@ -349,7 +349,7 @@
         (define-key
             thekeymap
             [?\C-j]
-            '(lambda ()
+            (lambda ()
                 (interactive)
                 (let (beg end)
                     (get-cur-line t beg end)
@@ -388,7 +388,7 @@
         (define-key
             thekeymap
             [?\C-j] ; send selected data to process
-            '(lambda ()
+            (lambda ()
                 (interactive)
                 (let (beg end)
                     (get-cur-line t beg end)
@@ -400,7 +400,7 @@
         (define-key
             thekeymap
             [?\s-O] ; open filename represented by current selection
-            '(lambda ()
+            (lambda ()
                 (interactive)
                 (let (selbeg selend path colon1pos colon2pos line-nr)
                     (get-cur-line nil selbeg selend)
@@ -492,7 +492,7 @@
 
 (global-set-key [?\s-h]
     ; search forward for next occurrence of current selection
-    '(lambda (selbegin selend)
+    (lambda (selbegin selend)
         (interactive "r")
         (cond
             (mark-active
@@ -508,7 +508,7 @@
 
 (global-set-key [?\s-H]
     ; search backward for next occurrence of current selection
-    '(lambda (selbegin selend)
+    (lambda (selbegin selend)
         (interactive "r")
         (cond
             (mark-active
@@ -524,7 +524,7 @@
 
 (global-set-key [?\s-g]
     ; search forward for next occurrence of last_search_string
-    '(lambda ()
+    (lambda ()
         (interactive)
         (search_next t)
     ) ; lambda
@@ -532,7 +532,7 @@
 
 (global-set-key [?\s-G]
     ; search backward for next occurrence of last_search_string
-    '(lambda ()
+    (lambda ()
         (interactive)
         (search_next nil)
     ) ; lambda
