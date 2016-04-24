@@ -101,6 +101,8 @@
     ) ; lambda
 )
 
+(global-set-key [?\C-c ?\ ] 'isearch-toggle-lax-whitespace)
+
 ;+
 ; Indentation control
 ;-
