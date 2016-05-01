@@ -55,6 +55,7 @@
 ; disable keys I keep hitting accidentally
 (global-unset-key [?\C-t]) ; (global-set-key [?\C-t] 'transpose-chars)
 (global-unset-key [?\C-z]) ; (global-set-key [?\C-z] 'suspend-frame)
+(global-unset-key [?\C-x ?\C-z]) ; (global-set-key [?\C-x ?\C-z] 'suspend-frame)
 
 (when (fboundp 'next-logical-line)
     (global-set-key [down] 'next-logical-line)
