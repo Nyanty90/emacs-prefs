@@ -23,6 +23,7 @@
     '(tool-bar-mode nil)
     '(transient-mark-mode t)
     '(delete-selection-mode t)
+    '(sentence-end-double-space nil)
 )
 (custom-set-faces
     ;; custom-set-faces was added by Custom -- don't edit or cut/paste it!
