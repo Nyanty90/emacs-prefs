@@ -189,6 +189,43 @@
 
 (global-set-key [?\s-[] 'indent_less)
 
+(defun prev_same_indent ()
+    "moves to the prior line with the same indentation level."
+    (interactive)
+    (back-to-indentation)
+    (let
+        (
+            (indent_end (point))
+            indent_prefix
+        )
+        (beginning-of-line)
+        (setq indent_prefix (buffer-substring (point) indent_end))
+        (re-search-backward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
+    )
+    (back-to-indentation)
+)
+
+(global-set-key [?\C-c ?p] 'prev_same_indent)
+
+(defun next_same_indent ()
+    "moves to the following line with the same indentation level."
+    (interactive)
+    (beginning-of-line)
+    (let
+        (
+            (line_begin (point))
+            indent_prefix
+        )
+        (back-to-indentation)
+        (setq indent_prefix (buffer-substring line_begin (point)))
+        (right-char) ; ensure it will not match current line
+        (re-search-forward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
+    )
+    (back-to-indentation)
+)
+
+(global-set-key [?\C-c ?n] 'next_same_indent)
+
 (defun toggle_tab_expansion ()
     "toggles tab expansion setting for current buffer."
     (interactive)
