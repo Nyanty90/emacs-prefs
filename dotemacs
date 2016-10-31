@@ -67,13 +67,12 @@
 
 ; MPW-style shortcuts (?\s- is Windows key)
 (global-set-key [?\s-o] 'find-file) ; open...
-(global-set-key [?\s-w]
-    (lambda ()
-        "closes the current buffer."
-        (interactive)
-        (kill-buffer (current-buffer))
-    ) ; lambda
-)
+(defun close_current_buffer ()
+    "closes the current buffer."
+    (interactive)
+    (kill-buffer (current-buffer))
+) ; close_current_buffer
+(global-set-key [?\s-w] 'close_current_buffer)
 (global-set-key [?\s-s] 'save-buffer) ; save
 (global-set-key [?\s-S] 'write-file) ; save as...
 ; (global-set-key [?\s-q] 'save-buffers-kill-emacs) ; quit ; forget it--keep hitting it accidentally
@@ -82,27 +81,27 @@
 (global-set-key [menu] 'tmm-menubar)
 
 (defun revert ()
-    "revert current buffer without confirmation."
+    "reverts current buffer without confirmation."
     (interactive)
     (revert-buffer t t)
 ) ; revert
 
-(global-set-key [?\C-c ?d]
-    (lambda ()
-        "inserts current date in canonical format."
-        (interactive)
-        (insert (shell-command-to-string "date +\"%Y %B %-d\""))
-        (delete-char -1) ; get rid of newline
-    ) ; lambda
-)
+(defun insert_current_date ()
+    "inserts current date in canonical format."
+    (interactive)
+    (insert (shell-command-to-string "date +\"%Y %B %-d\""))
+    (delete-char -1) ; get rid of newline
+) ; insert_current_date
 
-(global-set-key [?\C-c ?l]
-    (lambda ()
-        "inserts my standard identification string."
-        (interactive)
-        (insert "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>")
-    ) ; lambda
-)
+(global-set-key [?\C-c ?d] 'insert_current_date)
+
+(defun insert_ldo ()
+    "inserts my standard identification string."
+    (interactive)
+    (insert "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>")
+) ; insert_ldo
+
+(global-set-key [?\C-c ?l] 'insert_ldo)
 
 (global-set-key [?\C-c ?\ ] 'isearch-toggle-lax-whitespace)
 
@@ -160,52 +159,52 @@
     (electric-indent-mode -1) ; disable new behaviour in Emacs 24 that interferes with my code
 ) ; when
 
-(global-set-key [?\s-]]
-    (lambda (beg end)
-        "indent selected range by 4 columns without losing selection."
-        (interactive "*r")
-        (let*
-            (
-                deactivate-mark
-                (point_marker (point-marker))
-            )
-            (indent-rigidly beg end 4)
-            (goto-char (marker-position point_marker))
-        ) ; let*
-    ) ; lambda
-)
+(defun indent_more (beg end)
+    "indents selected range by 4 columns without losing selection."
+    (interactive "*r")
+    (let*
+        (
+            deactivate-mark
+            (point_marker (point-marker))
+        )
+        (indent-rigidly beg end 4)
+        (goto-char (marker-position point_marker))
+    ) ; let*
+) ; indent_more
 
-(global-set-key [?\s-[]
-    (lambda (beg end)
-        "unindent selected range by 4 columns without losing selection."
-        (interactive "*r")
-        (let*
-            (
-                deactivate-mark
-                (point_marker (point-marker))
-            )
-            (indent-rigidly beg end -4)
-            (goto-char (marker-position point_marker))
-        ) ; let*
-    ) ; lambda
-)
+(global-set-key [?\s-]] 'indent_more)
 
-(global-set-key [?\C-c ?t]
-    (lambda ()
-        "toggle tab expansion for current buffer."
-        (interactive)
-        (cond
-            (indent-tabs-mode
-                (setq indent-tabs-mode nil)
-                (message "tabs will be expanded to spaces")
-            )
-            (t
-                (setq indent-tabs-mode t)
-                (message "tabs will not be expanded to spaces")
-            )
-        ) ; cond
-    ) ; lambda
-)
+(defun indent_less (beg end)
+    "unindents selected range by 4 columns without losing selection."
+    (interactive "*r")
+    (let*
+        (
+            deactivate-mark
+            (point_marker (point-marker))
+        )
+        (indent-rigidly beg end -4)
+        (goto-char (marker-position point_marker))
+    ) ; let*
+) ; indent_less
+
+(global-set-key [?\s-[] 'indent_less)
+
+(defun toggle_tab_expansion ()
+    "toggles tab expansion setting for current buffer."
+    (interactive)
+    (cond
+        (indent-tabs-mode
+            (setq indent-tabs-mode nil)
+            (message "tabs will be expanded to spaces")
+        )
+        (t
+            (setq indent-tabs-mode t)
+            (message "tabs will not be expanded to spaces")
+        )
+    ) ; cond
+) ; toggle_tab_expansion
+
+(global-set-key [?\C-c ?t] 'toggle_tab_expansion)
 
 (add-hook 'find-file-hook
     (lambda ()
@@ -235,53 +234,54 @@
     ) ; lambda
 ) ; add-hook
 
-(global-set-key [?\C-c ?a]
-    (lambda (beg end)
-        "indents selected range to same level as first line without losing selection."
-        (interactive "*r")
-        (let
-            (
-                deactivate-mark
-                (point_marker (point-marker))
-            )
-            (goto-char beg)
-            (indent-region beg end (current-indentation))
-            (goto-char (marker-position point_marker))
-        ) ; let
-    ) ; lambda
-)
+(defun indent_propagate (beg end)
+    "indents selected range to same level as first line without losing selection."
+    (interactive "*r")
+    (let
+        (
+            deactivate-mark
+            (point_marker (point-marker))
+        )
+        (goto-char beg)
+        (indent-region beg end (current-indentation))
+        (goto-char (marker-position point_marker))
+    ) ; let
+) ; indent_propagate
 
-(global-set-key [?\s-\ ]
-    (lambda ()
-        (interactive)
-        (let ((prev-buffer-size (buffer-size)))
-            (delete-trailing-whitespace)
-            (cond
-                ((/= prev-buffer-size (buffer-size))
-                    (message "trailing whitespace deleted")
-                )
-                (t
-                    (message "no trailing whitespace found")
-                )
-            ) ; cond
-        ) ; let
-    ) ; lambda
-)
+(global-set-key [?\C-c ?a] 'indent_propagate)
 
-(global-set-key [?\C-c ?m]
-    (lambda ()
-        "selects the whole of the current message (from previous formfeed up to before next formfeed) in a mail collection file"
-        (interactive)
-        (deactivate-mark)
-        (search-backward "\f" nil 1)
-        (set-mark (point))
+(defun delete_trailing_whitespace ()
+    "deletes trailing whitespace and reports if any was actually found."
+    (interactive)
+    (let ((prev-buffer-size (buffer-size)))
+        (delete-trailing-whitespace)
         (cond
-            ((search-forward "\f" nil 1 2)
-                (backward-char)
+            ((/= prev-buffer-size (buffer-size))
+                (message "trailing whitespace deleted")
+            )
+            (t
+                (message "no trailing whitespace found")
             )
         ) ; cond
-    ) ; lambda
-)
+    ) ; let
+) ; delete_trailing_whitespace
+
+(global-set-key [?\s-\ ] 'delete_trailing_whitespace)
+
+(defun select_mail_message ()
+    "selects the whole of the current message (from previous formfeed up to before next formfeed) in a mail collection file"
+    (interactive)
+    (deactivate-mark)
+    (search-backward "\f" nil 1)
+    (set-mark (point))
+    (cond
+        ((search-forward "\f" nil 1 2)
+            (backward-char)
+        )
+    ) ; cond
+) ; select_mail_message
+
+(global-set-key [?\C-c ?m] 'select_mail_message)
 
 ;+
 ; Command buffers
