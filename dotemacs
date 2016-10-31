@@ -205,7 +205,7 @@
     (back-to-indentation)
 )
 
-(global-set-key [?\C-c ?p] 'prev_same_indent)
+(global-set-key [?\C-\s-p] 'prev_same_indent)
 
 (defun next_same_indent ()
     "moves to the following line with the same indentation level."
@@ -224,7 +224,7 @@
     (back-to-indentation)
 )
 
-(global-set-key [?\C-c ?n] 'next_same_indent)
+(global-set-key [?\C-\s-n] 'next_same_indent)
 
 (defun toggle_tab_expansion ()
     "toggles tab expansion setting for current buffer."
