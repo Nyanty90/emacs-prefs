@@ -471,7 +471,7 @@
                                         (format "%s" (process-id buffer-process))
                                         "/cwd"
                                     ) ; concat
-                                ); file-truname
+                                ) ; file-truename
                                 "/"
                                 path
                             ) ; concat
