@@ -200,10 +200,17 @@
         )
         (beginning-of-line)
         (setq indent_prefix (buffer-substring (point) indent_end))
-        (re-search-backward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
-    )
+        (cond
+            ((eq (length indent_prefix) 0) ; avoid matching empty lines
+                (re-search-backward "^[^ \t\n]+")
+            )
+            (t
+                (re-search-backward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
+            )
+        ) ; cond
+    ) ; let
     (back-to-indentation)
-)
+) ; prev_same_indent
 
 (global-set-key [?\C-\s-p] 'prev_same_indent)
 
@@ -219,10 +226,17 @@
         (back-to-indentation)
         (setq indent_prefix (buffer-substring line_begin (point)))
         (right-char) ; ensure it will not match current line
-        (re-search-forward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
-    )
+        (cond
+            ((eq (length indent_prefix) 0) ; avoid matching empty lines
+                (re-search-forward "^[^ \t\n]+")
+            )
+            (t
+                (re-search-forward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
+            )
+        ) ; cond
+    ) ; let
     (back-to-indentation)
-)
+) ; next_same_indent
 
 (global-set-key [?\C-\s-n] 'next_same_indent)
 
