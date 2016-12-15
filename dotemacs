@@ -201,11 +201,11 @@
         (beginning-of-line)
         (setq indent_prefix (buffer-substring (point) indent_end))
         (cond
-            ((eq (length indent_prefix) 0) ; avoid matching empty lines
-                (re-search-backward "^[^ \t\n]+")
+            ((/= (length indent_prefix) 0) ; avoid matching empty lines
+                (re-search-backward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
             )
             (t
-                (re-search-backward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
+                (re-search-backward "^[^ \t\n]+")
             )
         ) ; cond
     ) ; let
@@ -227,11 +227,11 @@
         (setq indent_prefix (buffer-substring line_begin (point)))
         (right-char) ; ensure it will not match current line
         (cond
-            ((eq (length indent_prefix) 0) ; avoid matching empty lines
-                (re-search-forward "^[^ \t\n]+")
+            ((/= (length indent_prefix) 0) ; avoid matching empty lines
+                (re-search-forward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
             )
             (t
-                (re-search-forward (concat "^" (regexp-quote indent_prefix) "[^ \t]"))
+                (re-search-forward "^[^ \t\n]+")
             )
         ) ; cond
     ) ; let
