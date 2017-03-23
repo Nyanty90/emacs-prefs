@@ -235,6 +235,94 @@
 
 (global-set-key [?\C-\s-n] 'next_same_indent)
 
+(defun prev_less_indent ()
+    "moves to the last prior line with a lesser indentation level."
+    (interactive)
+    (back-to-indentation)
+    (let
+        (
+            (indent_end (point))
+            indent_amt
+            line_start
+        )
+        (beginning-of-line)
+        (cond
+            ((> indent_end (point))
+                (setq indent_amt (- indent_end (point) 1))
+                (catch 'done
+                    (while t
+                        (when (= (point) (point-min))
+                            (ding)
+                            (throw 'done nil)
+                        ) ; when
+                        (previous-logical-line)
+                        (beginning-of-line)
+                        (setq line_start (point))
+                        (end-of-line)
+                        (when (/= line_start (point)) ; skip over empty lines
+                            (back-to-indentation)
+                            (setq indent_end (point))
+                            (beginning-of-line)
+                            (when (< (- indent_end (point)) indent_amt)
+                                (throw 'done nil)
+                            ) ; when
+                        ) ; when
+                    ) ; while
+                ) ; catch
+            )
+            (t ; on line with no leading whitespace
+                (ding)
+            )
+        ) ; cond
+    ) ; let
+    (back-to-indentation)
+) ; prev_less_indent
+
+(global-set-key [?\C-c ?p] 'prev_less_indent)
+
+(defun next_less_indent ()
+    "moves to the first following line with a lesser indentation level."
+    (interactive)
+    (beginning-of-line)
+    (let
+        (
+            (line_begin (point))
+            indent_amt
+            line_end
+        )
+        (back-to-indentation)
+        (cond
+            ((< line_begin (point))
+                (setq indent_amt (- (point) line_begin 1))
+                (catch 'done
+                    (while t
+                        (when (= (point) (point-max))
+                            (ding)
+                            (throw 'done nil)
+                        ) ; when
+                        (next-logical-line)
+                        (beginning-of-line)
+                        (setq line_begin (point))
+                        (end-of-line)
+                        (when (/= line_begin (point)) ; skip over empty lines
+                            (back-to-indentation)
+                            (when (< (- (point) line_begin) indent_amt)
+                                (throw 'done nil)
+                            ) ; when
+                        ) ; when
+                    ) ; while
+                ) ; catch
+            )
+            (t ; on line with no leading whitespace
+                (ding)
+            )
+        ) ; cond
+    ) ; let
+    (back-to-indentation)
+) ; next_less_indent
+
+(global-set-key [?\C-c ?n] 'next_less_indent)
+
 (defun indent_propagate (beg end)
     "indents selected range to same level as first line without losing selection."
     (interactive "*r")
