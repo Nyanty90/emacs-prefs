@@ -72,7 +72,7 @@
         (interactive)
         (cond
             ((string= (buffer-name) "*scratch*")
-                (message "Cannot kill scratch buffer")
+                (message "Not killing scratch buffer")
             )
             (t
                 (kill-this-buffer)
