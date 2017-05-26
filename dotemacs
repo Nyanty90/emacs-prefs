@@ -449,7 +449,7 @@
     "returns list of two character positions, representing the beginning and end of the selection if there is one, else the beginning and end of the current line. ensure-newline => ensures there is a newline at the end of the line."
     (let (beg end)
         (cond
-            (mark-active
+            ((use-region-p)
                 (setq beg (min (point) (mark)))
                 (setq end (max (point) (mark)))
             )
@@ -622,7 +622,7 @@
     (let ((startpos))
         (unless (equal last_search_string "")
             (cond
-                (mark-active
+                ((use-region-p)
                     (setq startpos
                         (cond
                             (fwd
@@ -661,7 +661,7 @@
     (lambda (selbegin selend)
         (interactive "r")
         (cond
-            (mark-active
+            ((use-region-p)
                 (setq last_search_string (buffer-substring selbegin selend))
                 (search_next t)
             )
@@ -677,7 +677,7 @@
     (lambda (selbegin selend)
         (interactive "r")
         (cond
-            (mark-active
+            ((use-region-p)
                 (setq last_search_string (buffer-substring selbegin selend))
                 (search_next nil)
             )
