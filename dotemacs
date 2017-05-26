@@ -113,6 +113,63 @@
 (global-set-key [?\C-c ?\ ] 'isearch-toggle-lax-whitespace)
 
 ;+
+; Useful common definitions
+;-
+
+(defun cur-line (ensure-newline)
+    "returns list of two character positions, representing the beginning and end of the selection if there is one, else the beginning and end of the current line. ensure-newline => ensures there is a newline at the end of the line."
+    (let (beg end)
+        (cond
+            ((use-region-p)
+                (setq beg (min (point) (mark)))
+                (setq end (max (point) (mark)))
+            )
+            (t
+                (save-excursion
+                    (setq beg (search-backward "\n" nil t))
+                    (cond
+                        (beg
+                            (setq beg (+ beg 1))
+                        )
+                        (t
+                            (setq beg (point-min))
+                        )
+                    ) ; cond
+                    (goto-char beg)
+                    (search-forward "\n" nil 1)
+                    (setq end (point))
+                ) ; save-excursion
+            )
+        ) ; cond
+        (when ensure-newline
+            (deactivate-mark)
+            (goto-char end)
+            (unless (eq (char-before) 10)
+                (insert "\n")
+                (setq end (point))
+            ) ; unless
+        ) ; when
+        (list beg end)
+    ) ; let
+) ; defun cur-line
+
+(defmacro get-cur-line (ensure-newline beg end)
+    "calls (cur-line ensure-newline) and assigns the two components of the result to beg and end."
+    (let
+        (
+            (tempvar (make-symbol "temp"))
+        )
+        `(let
+            (
+                (,tempvar (cur-line ,ensure-newline))
+            )
+            (setq ,beg (car ,tempvar))
+            (setq ,end (cadr ,tempvar))
+        ) ; let
+    ) ; let
+) ; defmacro get-cur-line
+
+;+
 ; Indentation control
 ;-
 
@@ -450,59 +507,6 @@
 ;+
 ; Command buffers
 ;-
-
-(defun cur-line (ensure-newline)
-    "returns list of two character positions, representing the beginning and end of the selection if there is one, else the beginning and end of the current line. ensure-newline => ensures there is a newline at the end of the line."
-    (let (beg end)
-        (cond
-            ((use-region-p)
-                (setq beg (min (point) (mark)))
-                (setq end (max (point) (mark)))
-            )
-            (t
-                (save-excursion
-                    (setq beg (search-backward "\n" nil t))
-                    (cond
-                        (beg
-                            (setq beg (+ beg 1))
-                        )
-                        (t
-                            (setq beg (point-min))
-                        )
-                    ) ; cond
-                    (goto-char beg)
-                    (search-forward "\n" nil 1)
-                    (setq end (point))
-                ) ; save-excursion
-            )
-        ) ; cond
-        (when ensure-newline
-            (deactivate-mark)
-            (goto-char end)
-            (unless (eq (char-before) 10)
-                (insert "\n")
-                (setq end (point))
-            ) ; unless
-        ) ; when
-        (list beg end)
-    ) ; let
-) ; defun cur-line
-
-(defmacro get-cur-line (ensure-newline beg end)
-    "calls (cur-line ensure-newline) and assigns the two components of the result to beg and end."
-    (let
-        (
-            (tempvar (make-symbol "temp"))
-        )
-        `(let
-            (
-                (,tempvar (cur-line ,ensure-newline))
-            )
-            (setq ,beg (car ,tempvar))
-            (setq ,end (cadr ,tempvar))
-        ) ; let
-    ) ; let
-) ; defmacro get-cur-line
 
 (defun make-command-buffer (cmd name)
     "creates a command buffer with the specified name, executing the specified cmd on selected text when ctrl-j is hit."
