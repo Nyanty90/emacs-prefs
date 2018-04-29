@@ -14,6 +14,7 @@
     '(pc-select-meta-moves-sexps t)
     '(pc-select-selection-keys-only t)
 ;   '(pc-selection-mode t t)
+    '(save-place-mode 1)
     '(save-place t nil (saveplace))
     '(show-trailing-whitespace t)
     '(indicate-empty-lines t)
