@@ -52,7 +52,7 @@
 (server-start)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message
-    (purecopy "; Scratch buffer -- list evaluation\n\n")
+    (purecopy "; Scratch buffer -- list evaluationion\n\n")
 )
 
 ; disable keys I keep hitting accidentally
@@ -232,11 +232,23 @@
         (
             deactivate-mark
             (point_marker (point-marker))
+            (indenting-blank-line nil)
         )
         (unless (use-region-p)
             (get-cur-line nil beg end)
+            (when (or (eq (char-after) 10) (eq (char-after) nil))
+                ; indent-rigidly doesn't do what I expect if current line is blank,
+                ; so insert a dummy character.
+                (insert "x")
+                (backward-char)
+                (setq indenting-blank-line t)
+            ) ; when
         ) ; unless
         (indent-rigidly beg end 4)
+        (when indenting-blank-line
+            ; remove dummy character inserted above.
+            (delete-char 1)
+        ) ; when
         (goto-char (marker-position point_marker))
     ) ; let*
 ) ; indent_more
@@ -250,11 +262,23 @@
         (
             deactivate-mark
             (point_marker (point-marker))
+            (indenting-blank-line nil)
         )
         (unless (use-region-p)
             (get-cur-line nil beg end)
+            (when (or (eq (char-after) 10) (eq (char-after) nil))
+                ; indent-rigidly doesn't do what I expect if current line is blank,
+                ; so insert a dummy character.
+                (insert "x")
+                (backward-char)
+                (setq indenting-blank-line t)
+            ) ; when
         ) ; unless
         (indent-rigidly beg end -4)
+        (when indenting-blank-line
+            ; remove dummy character inserted above.
+            (delete-char 1)
+        ) ; when
         (goto-char (marker-position point_marker))
     ) ; let*
 ) ; indent_less
