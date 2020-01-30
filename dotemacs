@@ -225,17 +225,19 @@
     (electric-indent-mode -1) ; disable new behaviour in Emacs 24 that interferes with my code
 ) ; when
 
-(defun indent_more (beg end)
+(defun indent_more ()
     "indents selected range by 4 columns without losing selection."
-    (interactive "*r")
+    (interactive "*")
     (let*
         (
+            beg
+            end
             deactivate-mark
             (point_marker (point-marker))
             (indenting-blank-line nil)
         )
+        (get-cur-line nil beg end)
         (unless (use-region-p)
-            (get-cur-line nil beg end)
             (when (or (eq (char-after) 10) (eq (char-after) nil))
                 ; indent-rigidly doesn't do what I expect if current line is blank,
                 ; so insert a dummy character.
@@ -255,17 +257,19 @@
 
 (global-set-key [?\s-]] 'indent_more)
 
-(defun indent_less (beg end)
+(defun indent_less ()
     "unindents selected range by 4 columns without losing selection."
-    (interactive "*r")
+    (interactive "*")
     (let*
         (
+            beg
+            end
             deactivate-mark
             (point_marker (point-marker))
             (indenting-blank-line nil)
         )
+        (get-cur-line nil beg end)
         (unless (use-region-p)
-            (get-cur-line nil beg end)
             (when (or (eq (char-after) 10) (eq (char-after) nil))
                 ; indent-rigidly doesn't do what I expect if current line is blank,
                 ; so insert a dummy character.
