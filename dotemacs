@@ -52,7 +52,7 @@
 (server-start)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message
-    (purecopy "; Scratch buffer -- list evaluationion\n\n")
+    (purecopy "; Scratch buffer -- list evaluation\n\n")
 )
 
 ; disable keys I keep hitting accidentally
