@@ -550,6 +550,7 @@
         (make-local-variable 'buffer-command)
         (setq buffer-command (split-string cmd))
         (make-local-variable 'indent-tabs-mode)
+        (make-local-variable 'default-directory)
         (setq indent-tabs-mode nil)
         (use-local-map thekeymap)
         (define-key
@@ -565,9 +566,17 @@
                 ) ; let
             ) ; lambda
         ) ; define-key
+        (define-key
+            thekeymap
+            [?\s-j]
+            (lambda (newdir)
+                (interactive "DDefault directory: ")
+                (setq default-directory newdir)
+            ) ; lambda
+        ) ; define-key
         (insert "# press ctrl-j to execute \"")
         (insert cmd)
-        (insert "\" on selected text.\n\n")
+        (insert "\" on selected text, 🐧-j to set default directory.\n\n")
     ) ; let
 ) ; defun make-command-buffer
 
