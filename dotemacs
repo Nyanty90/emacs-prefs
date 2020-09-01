@@ -574,6 +574,31 @@
                 (setq default-directory newdir)
             ) ; lambda
         ) ; define-key
+        (define-key
+            thekeymap
+            [?\s-o] ; open filename represented by current selection
+            (lambda ()
+                (interactive)
+                (cond
+                    ((use-region-p)
+                        (let
+                            (
+                                (path (buffer-substring (region-beginning) (region-end)))
+                            )
+                            (unless (file-name-absolute-p path)
+                                (setq path
+                                    (concat default-directory "/" path)
+                                ) ; setq
+                            ) ; unless
+                            (find-file path)
+                        ) ; let
+                    )
+                    (t
+                        (call-interactively 'find-file)
+                    )
+                ) ; cond
+            ) ; lambda
+        ) ; define-key
         (insert "# press ctrl-j to execute \"")
         (insert cmd)
         (insert "\" on selected text, 🐧-j to set default directory.\n\n")
