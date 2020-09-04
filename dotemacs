@@ -590,11 +590,11 @@
                                     (concat default-directory "/" path)
                                 ) ; setq
                             ) ; unless
-                            (find-file path)
+                            (find-file-other-window path)
                         ) ; let
                     )
                     (t
-                        (call-interactively 'find-file)
+                        (call-interactively 'find-file-other-window)
                     )
                 ) ; cond
             ) ; lambda
