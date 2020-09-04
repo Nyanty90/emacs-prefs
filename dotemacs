@@ -88,6 +88,8 @@
 (global-set-key [?\s-z] 'undo)
 
 (global-set-key [menu] 'tmm-menubar)
+(global-set-key [?\C-x ?O] (lambda () (interactive) (other-window -1)))
+  ; C-x-O rotates through windows opposite way to C-x-o
 
 (defun revert ()
     "reverts current buffer without confirmation."
