@@ -550,7 +550,7 @@
         )
         (switch-to-buffer thebuffer)
         (make-local-variable 'buffer-command)
-        (setq buffer-command (split-string cmd))
+        (setq buffer-command (split-string-and-unquote cmd))
         (make-local-variable 'indent-tabs-mode)
         (make-local-variable 'default-directory)
         (setq indent-tabs-mode nil)
