@@ -571,9 +571,24 @@
         (define-key
             thekeymap
             [?\s-j]
-            (lambda (newdir)
-                (interactive "DDefault directory: ")
-                (setq default-directory newdir)
+            (lambda ()
+                (interactive)
+                (let (newdir)
+                    (cond
+                        ((use-region-p)
+                            (setq newdir (buffer-substring (region-beginning) (region-end)))
+                        )
+                        (t
+                            (setq newdir (read-directory-name "Default directory: "))
+                        )
+                    ) ; cond
+                    (setq newdir (file-truename newdir))
+                    (unless (file-directory-p newdir)
+                        (error "Not a directory: %s" newdir)
+                    ) ; unless
+                    (setq default-directory newdir)
+                    (message "Directory set to %s" newdir)
+                ) ; let
             ) ; lambda
         ) ; define-key
         (define-key
