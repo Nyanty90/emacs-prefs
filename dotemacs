@@ -481,6 +481,38 @@
 (global-set-key [?\C-c ?a] 'indent_propagate)
 
 ;+
+; Navigation
+;-
+
+(setq section-header-pattern "^\\(?:[\\#;]\\+\\|/\\*\\)$")
+(setq section-header-end-pattern "^\\(?:[\\#;]-\\|\\*/\\)$")
+; Allows for: “#+\n...#-\n” (Python etc); “;+\n...;-\n” (Lisp); “/*\n...*/\n” (C).
+
+(defun prev-section ()
+    (interactive)
+    (beginning-of-line)
+    (unless (re-search-backward section-header-pattern nil t)
+        (goto-char (point-min))
+    ) ; unless
+) ; prev-section
+
+(defun next-section ()
+    (interactive)
+    (end-of-line)
+    (cond
+        ((re-search-forward section-header-pattern nil t)
+            (beginning-of-line)
+        )
+        (t
+            (goto-char (point-max))
+        )
+    ) ; cond
+) ; next-section
+
+(global-set-key (kbd "s-<prior>") 'prev-section)
+(global-set-key (kbd "s-<next>") 'next-section)
+
+;+
 ; Whitespace management
 ;-
 
