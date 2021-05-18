@@ -120,8 +120,23 @@
 ; Useful common definitions
 ;-
 
+(defmacro mstr (&rest strs)
+    "lets me define a long string literal in pieces across lines, useful for docstrings."
+    (let
+        (
+            (result (apply 'concat strs))
+        )
+        result
+    ) ; let
+) ; defmacro mstr
+
 (defun cur-line (ensure-newline)
-    "returns list of two character positions, representing the beginning and end of the selection if there is one, else the beginning and end of the current line. ensure-newline => ensures there is a newline at the end of the line."
+    (mstr
+        "returns list of two character positions, representing the"
+        " beginning and end of the selection if there is one, else"
+        " the beginning and end of the current line. ensure-newline"
+        " => ensures there is a newline at the end of the line."
+    )
     (let (beg end)
         (cond
             ((use-region-p)
@@ -541,7 +556,10 @@
 ;-
 
 (defun make-command-buffer (cmd name)
-    "creates a command buffer with the specified name, executing the specified cmd on selected text when ctrl-j is hit."
+    (mstr
+        "creates a command buffer with the specified name, executing"
+        " the specified cmd on selected text when ctrl-j is hit."
+    )
     (interactive "sCmd: \nsBuffer name: ")
     (let
         (
@@ -623,7 +641,11 @@
 ) ; defun make-command-buffer
 
 (defun make-shell-buffer (name)
-    "creates a process buffer with the specified name, for a process executing a shell, which is fed selected text as input when ctrl-j is hit."
+    (mstr
+        "creates a process buffer with the specified name, for"
+        " a process executing a shell, which is fed selected text"
+        " as input when ctrl-j is hit."
+    )
     (interactive "sBuffer name: ")
     (let
         (
@@ -800,7 +822,10 @@
 ;-
 
 (defun select_mail_message ()
-    "selects the whole of the current message (from previous formfeed up to before next formfeed) in a mail collection file"
+    (mstr
+        "selects the whole of the current message (from previous formfeed"
+        " up to before next formfeed) in a mail collection file."
+    )
     (interactive)
     (deactivate-mark)
     (search-backward "\f" nil 1)
