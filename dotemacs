@@ -122,12 +122,7 @@
 
 (defmacro mstr (&rest strs)
     "lets me define a long string literal in pieces across lines, useful for docstrings."
-    (let
-        (
-            (result (apply 'concat strs))
-        )
-        result
-    ) ; let
+    (apply 'concat strs)
 ) ; defmacro mstr
 
 (defun cur-line (ensure-newline)
