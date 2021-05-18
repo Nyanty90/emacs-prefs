@@ -449,6 +449,7 @@
                     )
                     (t ; on line with no leading whitespace
                         (ding)
+                        (throw 'done nil)
                     )
                 ) ; cond
             ) ; let
