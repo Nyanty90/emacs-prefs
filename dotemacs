@@ -586,7 +586,7 @@
 (defun make-command-buffer (cmd name)
     (mstr
         "creates a command buffer with the specified name, executing"
-        " the specified cmd on selected text when ctrl-j is hit."
+        " the specified cmd on selected text when Num-Enter is hit."
     )
     (interactive "sCmd: \nsBuffer name: ")
     (let
@@ -603,7 +603,7 @@
         (use-local-map thekeymap)
         (define-key
             thekeymap
-            [?\C-j]
+            [kp-enter]
             (lambda ()
                 (interactive)
                 (let (beg end)
@@ -662,7 +662,7 @@
                 ) ; cond
             ) ; lambda
         ) ; define-key
-        (insert "# press ctrl-j to execute \"")
+        (insert "# press Num-Enter to execute \"")
         (insert cmd)
         (insert "\" on selected text, 🐧-j to set default directory.\n\n")
     ) ; let
@@ -672,7 +672,7 @@
     (mstr
         "creates a process buffer with the specified name, for"
         " a process executing a shell, which is fed selected text"
-        " as input when ctrl-j is hit."
+        " as input when Num-Enter is hit."
     )
     (interactive "sBuffer name: ")
     (let
@@ -694,7 +694,7 @@
         (use-local-map thekeymap)
         (define-key
             thekeymap
-            [?\C-j] ; send selected data to process
+            [kp-enter] ; send selected data to process
             (lambda ()
                 (interactive)
                 (let (beg end)
@@ -748,7 +748,7 @@
                 ) ; let
             ) ; lambda
         ) ; define-key
-        (insert "# press ctrl-j to feed selected text to shell.\n\n")
+        (insert "# press Num-Enter to feed selected text to shell.\n\n")
     ) ; let
 ) ; defun make-shell-buffer
 
