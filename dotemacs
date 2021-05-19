@@ -481,7 +481,7 @@
 (global-set-key [?\C-c ?a] 'indent_propagate)
 
 ;+
-; Navigation
+; Navigation By Sections
 ;-
 
 (setq section-header-pattern "^\\(?:[\\#;]\\+\\|/\\*\\)$")
@@ -511,6 +511,188 @@
 
 (global-set-key [kp-subtract] 'prev-section)
 (global-set-key [kp-add] 'next-section)
+
+;+
+; Hiding/Showing Text (Collapsar)
+;-
+
+(defun hide_text (beg end)
+    "hides the text in the region, replacing it with an indicator symbol."
+    (interactive "*r")
+    (let
+        (
+            (olay (make-overlay beg end))
+        )
+        (overlay-put olay 'category 'collapsar)
+        ;(overlay-put olay 'display "🐧\n")
+        ;(overlay-put olay 'face '(:foreground "turquoise" :background "yellow"))
+        (overlay-put olay
+            'display #("🐧\n" 0 1 (face '(:foreground "turquoise" :background "yellow")))
+        )
+        (overlay-put olay 'evaporate t)
+        (deactivate-mark)
+    ) ; let
+) ; hide_text
+
+(defun foreach_hidden_text (act)
+    (mstr
+        "invokes (act «overlay») for each «overlay» in the"
+        " current buffer representing collapsar hidden text."
+    )
+    (let
+        (
+            (last-start 0)
+            (last-end 0)
+        )
+        (dolist
+            (
+                olay
+                (sort
+                    (overlays-in (point-min) (point-max))
+                    (lambda (o1 o2) (< (overlay-start o1) (overlay-start o2)))
+                )
+            )
+            (when (eq (overlay-get olay 'category) 'collapsar)
+                (let
+                    (
+                        (this-start (overlay-start olay))
+                        (this-end (overlay-end olay))
+                    )
+                    ; very crude overlap check, but should be sufficient
+                    (when (>= this-start last-end)
+                        (setq last-start this-start)
+                        (setq last-end this-end)
+                        (funcall act olay)
+                    ); when
+                ) ; let
+            ) ; when
+        ) ; dolist
+    ) ; let
+) ; foreach_hidden_text
+
+(defun foreach_hidden_text_at (act pos)
+    (mstr
+        "invokes (act «overlay») for each «overlay» around the"
+        " current position representing collapsar hidden text."
+    )
+    (dolist (olay (overlays-at pos))
+        (when (eq (overlay-get olay 'category) 'collapsar)
+            (funcall act olay)
+        ) ; when
+    ) ; dolist
+) ; foreach_hidden_text
+
+(defun prev_hidden_text ()
+    "jumps to the prior symbol indicating a region of hidden text, if there is one."
+    (interactive)
+    (let*
+        (
+            (minpos (point-min))
+            (pos minpos)
+            (here (point))
+        )
+        (foreach_hidden_text
+            (lambda (olay)
+                (let
+                    (
+                        (there (overlay-start olay))
+                    )
+                    (when (and (< there here) (> there pos))
+                        (setq pos there)
+                    ) ; when
+                ) ; let
+            ) ; lambda
+        ) ; foreach_hidden_text
+        (cond
+            ((> pos minpos)
+                (goto-char pos)
+            )
+            (t
+                (ding)
+            )
+        ) ; cond
+    ) ; let
+) ; prev_hidden_text
+
+(defun next_hidden_text ()
+    "jumps to the next symbol indicating a region of hidden text, if there is one."
+    (interactive)
+    (let*
+        (
+            (endpos (point-max))
+            (pos endpos)
+            (here (point))
+        )
+        (foreach_hidden_text
+            (lambda (olay)
+                (let
+                    (
+                        (there (overlay-start olay))
+                    )
+                    (when (and (> there here) (< there pos))
+                        (setq pos there)
+                    ) ; when
+                ) ; let
+            ) ; lambda
+        ) ; foreach_hidden_text
+        (cond
+            ((< pos endpos)
+                (goto-char pos)
+            )
+            (t
+                (ding)
+            )
+        ) ; cond
+    ) ; let
+) ; next_hidden_text
+
+(defun reveal_text ()
+    "reveals the hidden text at the current point."
+    (interactive)
+    (let
+        (
+            (revealed-something)
+        )
+        (foreach_hidden_text_at
+            (lambda (olay)
+                (delete-overlay olay)
+                (setq revealed-something t)
+            ) ; lambda
+            (point)
+        ) ; foreach_hidden_text_at
+        (unless revealed-something
+            (ding)
+        ) ; unless
+    ) ; let
+) ; reveal_text
+
+(defun reveal_all_text ()
+    "reveals all hidden text in the current buffer."
+    (interactive)
+    (let
+        (
+            (overlays (overlays-in (point-min) (point-max)))
+        )
+        (while overlays
+            (let
+                (
+                    (olay (car overlays))
+                    (rest (cdr overlays))
+                )
+                (when (eq (overlay-get olay 'category) 'collapsar)
+                    (delete-overlay olay)
+                ) ; when
+                (setq overlays rest)
+            ) ; let
+        ) ; while
+    ) ; let
+) ; reveal_all_text
+
+(global-set-key [s-home] 'hide_text)
+(global-set-key [s-end] 'reveal_text)
+(global-set-key [C-s-end] 'reveal_all_text)
+(global-set-key [s-prior] 'prev_hidden_text)
+(global-set-key [s-next] 'next_hidden_text)
 
 ;+
 ; Whitespace management
