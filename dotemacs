@@ -509,8 +509,8 @@
     ) ; cond
 ) ; next-section
 
-(global-set-key (kbd "s-<prior>") 'prev-section)
-(global-set-key (kbd "s-<next>") 'next-section)
+(global-set-key [kp-subtract] 'prev-section)
+(global-set-key [kp-add] 'next-section)
 
 ;+
 ; Whitespace management
