@@ -783,9 +783,7 @@
         (make-local-variable 'default-directory)
         (setq indent-tabs-mode nil)
         (use-local-map thekeymap)
-        (define-key
-            thekeymap
-            [kp-enter]
+        (define-key thekeymap [kp-enter]
             (lambda ()
                 (interactive)
                 (let (beg end)
@@ -796,9 +794,11 @@
                 ) ; let
             ) ; lambda
         ) ; define-key
-        (define-key
-            thekeymap
-            [?\s-j]
+        (define-key thekeymap [C-return]
+            ; ctrl-return synonym for above
+            (lookup-key thekeymap [kp-enter])
+        ) ; define-key
+        (define-key thekeymap [?\s-j]
             (lambda ()
                 (interactive)
                 (let (newdir)
@@ -819,9 +819,8 @@
                 ) ; let
             ) ; lambda
         ) ; define-key
-        (define-key
-            thekeymap
-            [?\s-o] ; open filename represented by current selection
+        (define-key thekeymap [?\s-o]
+            ; open filename represented by current selection
             (lambda ()
                 (interactive)
                 (cond
@@ -874,9 +873,8 @@
             (start-process name thebuffer shell)
         )
         (use-local-map thekeymap)
-        (define-key
-            thekeymap
-            [kp-enter] ; send selected data to process
+        (define-key thekeymap [kp-enter]
+            ; send selected data to process
             (lambda ()
                 (interactive)
                 (let (beg end)
@@ -886,9 +884,12 @@
                 ) ; let
             ) ; lambda
         ) ; define-key
-        (define-key
-            thekeymap
-            [?\s-O] ; open filename represented by current selection
+        (define-key thekeymap [C-return]
+            ; ctrl-return synonym for above
+            (lookup-key thekeymap [kp-enter])
+        ) ; define-key
+        (define-key thekeymap [?\s-O]
+            ; open filename represented by current selection
             (lambda ()
                 (interactive)
                 (let (selbeg selend path colon1pos colon2pos line-nr)
