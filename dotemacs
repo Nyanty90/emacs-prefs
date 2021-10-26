@@ -580,7 +580,7 @@
             (funcall act olay)
         ) ; when
     ) ; dolist
-) ; foreach_hidden_text
+) ; foreach_hidden_text_at
 
 (defun prev_hidden_text ()
     "jumps to the prior symbol indicating a region of hidden text, if there is one."
