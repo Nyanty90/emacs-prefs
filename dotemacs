@@ -563,7 +563,7 @@
                         (setq last-start this-start)
                         (setq last-end this-end)
                         (funcall act olay)
-                    ); when
+                    ) ; when
                 ) ; let
             ) ; when
         ) ; dolist
