@@ -29,5 +29,5 @@
             ) ; cond
             (insert-char c)
         ) ; dotimes
-    ); let
+    ) ; let
 ) ; convert-to-region-codes
