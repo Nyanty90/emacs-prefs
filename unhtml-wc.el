@@ -14,11 +14,29 @@
             )
             (set-buffer tempbuf)
             (insert-buffer-substring-no-properties curbuf beg end)
+            ; Multiline search seems to be troublesome (e.g. slow, stack overflow),
+            ; so find opening and closing tags using separate searches.
+            (goto-char (point-min))
+            (while (search-forward "<!--" nil t)
+                ; Get rid of commented-out sections.
+                (let*
+                    (
+                        (end-tag (point))
+                        (start-tag
+                            (progn
+                                (search-backward "<" nil nil)
+                                (point)
+                            ) ; progn
+                        )
+                    )
+                    (goto-char end-tag)
+                    (search-forward "-->" nil nil)
+                    (delete-region start-tag (point))
+                ) ; let*
+            ) ; while
             (dolist (tag '("head" "style" "script"))
                 ; Gobble entire content for these tags, up to and including closing tags
                 ; (luckily they don’t nest).
-                ; Multiline search seems to be troublesome (e.g. slow, stack overflow),
-                ; so find opening and closing tags using separate searches.
                 (goto-char (point-min))
                 (while (re-search-forward (concat "<" tag "[^>]*>") nil t)
                     (let*
