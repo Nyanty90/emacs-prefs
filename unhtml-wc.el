@@ -47,8 +47,8 @@
                 ; Gobble entire content for these tags, up to and including closing tags
                 ; (luckily they don’t nest).
                 (funcall delete-between
-                    (lambda () (re-search-forward (concat "<" tag "[^>]*>") nil t))
-                    (lambda () (re-search-forward (concat "</" tag "[^>]*>") nil nil))
+                    (lambda () (re-search-forward (concat "<" tag "\\b[^>]*>") nil t))
+                    (lambda () (re-search-forward (concat "</" tag "\\b[^>]*>") nil nil))
                 )
             ) ; dolist
             (goto-char (point-min))
