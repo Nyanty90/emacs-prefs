@@ -14,8 +14,8 @@
                 (tempbuf (generate-new-buffer "wc-temp"))
                 (delete-between
                     (lambda (find-opener find-closer)
-                        ; deletes region between points identified by
-                        ; find-opener and find-closer callbacks
+                        ; deletes regions between successive pairs of points
+                        ; identified by find-opener and find-closer callbacks
                         (goto-char (point-min))
                         (while (funcall find-opener)
                             (let*
