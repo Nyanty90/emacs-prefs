@@ -1,5 +1,7 @@
 ;+
 ; Do a word count of a selection of HTML text, excluding markup.
+; Assumption: each tag plus any attributes is contained entirely on one line.
+; Tag content can extend across multiple lines.
 ;-
 
 (defun unhtml-wc (beg end)
